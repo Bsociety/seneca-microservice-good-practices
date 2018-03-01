@@ -35,7 +35,7 @@ mergeValidate.validate({
   .then(result => done(null, result))
   .catch(err => done(null, err))
 ```
-[Complete example](https://gist.github.com/FelipeBarrosCruz/3cecab82bbe730d75ea7e3201882dcae)
+[Complete example](https://github.com/Btime/btime-microservice-code-style/examples/validate.js)
 
 ### Joi Validation on Microservice
 
