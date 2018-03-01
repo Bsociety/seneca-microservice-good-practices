@@ -35,7 +35,7 @@ mergeValidate.validate({
   .then(result => done(null, result))
   .catch(err => done(null, err))
 ```
-[Complete example](https://github.com/Btime/btime-microservice-code-style/examples/validate.js)
+[Complete example](https://github.com/Btime/btime-microservice-code-style/blob/master/examples/validate.js)
 
 ### Joi Validation on Microservice
 
@@ -59,7 +59,7 @@ mergeValidate.validate({
 ### The message sending to another microservice
 
 - The function responsible for sending a message to another microservice
-**must** respect `err` and `response` patterns below:
+**must** respect `err` and `response` as the pattern below:
 
 ```js
 const logMessage = 'LOG::[SERVICE | UPSERT]'
