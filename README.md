@@ -90,10 +90,10 @@ return new Promise((resolve, reject) => {
       return reject(err)
     }
     if (!response.status) {
-      seneca.log.error(logMessage, err)
+      seneca.log.error(logMessage, response)
       return reject(response)
     }
-    seneca.log.info(logMessage, err)
+    seneca.log.info(logMessage, response)
     return resolve(response)
   })
 })
