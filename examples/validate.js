@@ -15,7 +15,7 @@ function Plugin() {
       schema: getValidateSchema(),
       options: { abortEarly: false }
     })
-      .then(params => create(params))
+      .then(create)
       .then(result => done(null, result))
       .catch(err => done(null, err))
   }
