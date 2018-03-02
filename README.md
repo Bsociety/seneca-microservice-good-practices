@@ -9,20 +9,38 @@
 1. `update.js`
 1. `delete.js`
 
+## Packages
+
+### Importing BTime Packages
+
+- When needed to import any package made by BTime, `package.json` **must** use as the pattern below:
+
+```JSON
+"dependencies": {
+  "btime-merge-validate-package": "git+ssh://git@github.com/Btime/btime-merge-validate-package.git#master"
+}
+```
+
+[Package example](https://github.com/Btime/btime-merge-validate-package)
+
 ## Functions
 
 - Use **private functions** for specific responsabilities. Examples: Joi validation, the message sending to another microservice, etc.
 
 - All private functions **must** return a `promise`. Exceptions: Joi validation.
 
-### Using Parameters Fomatation and Joi Validation on Validate Package
+### Using Parameters Formatation and Joi Validation on Validate Package
+
+- The validate method **must** use `PICK_FIELDS` constant.
 
 - Example:
 
 ```js
 const MergeValidate = require('btime-merge-validate-package')
 const mergeValidate = MergeValidate(seneca)
-
+const PICK_FIELDS = [
+  'id'
+]
   ...
 
 mergeValidate.validate({
@@ -31,35 +49,35 @@ mergeValidate.validate({
   schema: getValidateSchema(),
   options: { abortEarly: false }
 })
-  .then(params => create(params))
-  .then(result => done(null, result))
-  .catch(err => done(null, err))
 ```
+
 [Complete example](https://github.com/Btime/btime-microservice-code-style/blob/master/examples/validate.js)
 
 ### Joi Validation on Microservice
 
 - The function responsible for Joi validation **must** have the signature `getValidateSchema ()`
 
-- This function **must** have a separation (`\n`) between field rules. Example:
+- This function **must** have a separator (`\n`) between field rules. Example:
 
 ```js
-{
-  type: Joi.string()
-  .required()
-  .valid(DOCUMENT_TYPES)
-  .description('the user enabled status'),
+function getValidateSchema () {
+  return {
+    type: Joi.string()
+    .required()
+    .valid(DOCUMENT_TYPES)
+    .description('the user enabled status'),
 
-  number: Joi.number()
-  .required()
-  .description('the user deleted status')
+    number: Joi.number()
+    .required()
+    .description('the user deleted status')
+  }
 }
 ```
 
 ### The message sending to another microservice
 
 - The function responsible for sending a message to another microservice
-**must** respect `err` and `response` as the pattern below:
+**must** respect `err`, `response` and `logging` as the pattern below:
 
 ```js
 const logMessage = 'LOG::[SERVICE | UPSERT]'
@@ -87,7 +105,7 @@ return new Promise((resolve, reject) => {
 **must** respect the `then` and `catch` as the pattern below:
 
 ```js
-specficFunction(params)
+yourFunction(params)
   .then(result => done(null, result))
   .catch(err => done(null, { status: false, message: err && err.message || err }))
 ```
@@ -140,7 +158,7 @@ Example: `contributor.test.js`.
 
 - The file **must** respect the order below:
 
-1. Create/Upsert (when creating)
+1. Create/Upsert
 1. Select
 1. Update
 1. Delete
