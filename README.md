@@ -30,7 +30,7 @@
 
 ## Packages
 
-- Add [`seneca-merge-validate package`](https://www.npmjs.com/package/seneca-merge-validate):
+- Add [`Seneca Merge-Validate package`](https://www.npmjs.com/package/seneca-merge-validate):
 
 ```bash
 npm i seneca-merge-validate
@@ -87,7 +87,7 @@ mergeValidate.validate({
 })
 ```
 
-[Complete example](https://github.com/Btime/btime-microservice-code-style/blob/master/examples/validate.js)
+[Complete example](https://github.com/Bsociety/seneca-microservice-good-practices/blob/master/examples/validate.js)
 
 ### Message sending to another microservice
 
