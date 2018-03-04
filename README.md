@@ -2,14 +2,14 @@
 
 ![npm](https://img.shields.io/badge/npm-v5.6.1-blue.svg) ![yarn](https://img.shields.io/badge/yarn-v1.3.2-blue.svg) ![node](https://img.shields.io/badge/node-v8.9.0-brightgreen.svg)
 
-# Table of Contents
-1. [Files](#files)
+## Table of Contents
 1. [Packages](#packages)
+1. [Files](#files)
 1. [Functions](#functions)
     1. [Joi validation](#joi-validation)
     1. [Params formatation/validation](#params-formatationvalidation)
-    1. [Message sending to another microservice](#message-sending-to-another-microservice)
     1. [Promises Chaining](#promises-chaining)
+    1. [Message sending to another microservice](#message-sending-to-another-microservice)
 1. [Responses](#responses)
     1. [In case of Error](#in-case-of-error)
     1. [In case of Success](#in-case-of-success)
@@ -18,6 +18,14 @@
     1. [Mocks](#mocks)
 1. [Pull Requests](#pull-requests)
     1. [Recomendation](#recomendation)
+
+## Packages
+
+- Add [`Seneca Merge-Validate package`](https://www.npmjs.com/package/seneca-merge-validate):
+
+```bash
+npm i seneca-merge-validate
+```
 
 ## Files
 
@@ -28,23 +36,15 @@
 1. `update.js`
 1. `delete.js`
 
-## Packages
-
-- Add [`Seneca Merge-Validate package`](https://www.npmjs.com/package/seneca-merge-validate):
-
-```bash
-npm i seneca-merge-validate
-```
-
 ## Functions
 
-- Use **private functions** for specific responsabilities. Examples: Joi validation, the message sending to another microservice, etc.
+- Use **private functions** for specific responsabilities. Examples: Joi validation, message sending to another microservice, etc.
 
-- All private functions **must** return a `promise`. Exceptions: Joi validation.
+- All private functions **must** return a `promise`. Exception: Joi validation.
 
 ### Joi validation
 
-- The function responsible for defining Joi validation **must** have the signature `getValidateSchema ()`
+- The function responsible for defining Joi validation **must** have the signature `getValidateSchema ()`.
 
 - This function **must** have a separator (`\n`) between field rules. Example:
 
@@ -67,7 +67,7 @@ function getValidateSchema () {
 
 - The params formatation and validation is going to use [`Seneca Merge-Validate package`](https://github.com/Bsociety/seneca-merge-validate)
 
-- The validate method **must** send `args`, `PICK_FIELDS` constant, Joi `schema` defined on `getValidateSchema` function and `options`
+- The validate method **must** send `args`, `PICK_FIELDS` constant, Joi `schema` defined on `getValidateSchema` function and `options`.
 
 - Example:
 
@@ -89,29 +89,43 @@ mergeValidate.validate({
 
 [Complete example](https://github.com/Bsociety/seneca-microservice-good-practices/blob/master/examples/validate.js)
 
+### Promises Chaining
+
+- The chaining promises responsible for executing bussiness rules
+**must** respect `then` and `catch` as the pattern below:
+
+```js
+  mergeValidate.validate({ ... })
+    .then(params => yourFunction(params))
+    .then(result => done(null, result))
+    .catch(err => done(null, { status: false, message: err && err.message || err }))
+```
+
 ### Message sending to another microservice
 
 - The function responsible for sending a message to another microservice
 **must** respect `err`, `response` and `logging` as the pattern below:
 
 ```js
-const logMessage = 'LOG::[SERVICE | UPSERT]'
-return new Promise((resolve, reject) => {
-  const pattern = definePattern()
-  const payload = definePayload(params)
-  seneca.act(pattern, payload, (err, response) => {
-    if (err) {
-      seneca.log.fatal(logMessage, err)
-      return reject(err)
-    }
-    if (!response.status) {
-      seneca.log.error(logMessage, response)
-      return reject(response)
-    }
-    seneca.log.info(logMessage, response)
-    return resolve(response)
+function yourFunction (params) {
+  const logMessage = 'LOG::[SERVICE | UPSERT]'
+  return new Promise((resolve, reject) => {
+    const pattern = definePattern()
+    const payload = definePayload(params)
+    seneca.act(pattern, payload, (err, response) => {
+      if (err) {
+        seneca.log.fatal(logMessage, err)
+        return reject(err)
+      }
+      if (!response.status) {
+        seneca.log.error(logMessage, response)
+        return reject(response)
+      }
+      seneca.log.info(logMessage, response)
+      return resolve(response)
+    })
   })
-})
+}
 ```
 
 - The `pattern` and `payload` needed to send a message to another microservice
@@ -134,24 +148,13 @@ function definePayload (formattedParams) {
 }
 ```
 
-### Promises Chaining
-
-- The chain promises responsible for executing a bussiness rules
-**must** respect the `then` and `catch` as the pattern below:
-
-```js
-yourFunction(params)
-  .then(result => done(null, result))
-  .catch(err => done(null, { status: false, message: err && err.message || err }))
-```
-
 ## Responses
 
 ### In case of Error
 
 - Error responses of a microservice **must** follow the pattern below.
 
-- This pattern **must** be used for Joi validation or any other microservice that contains errors, whatever these errors come from *Joi*, *entity microservice*, etc.
+- This pattern **must** be used for Joi validation or any other microservice that contains errors.
 
 ```js
 {
@@ -173,7 +176,7 @@ yourFunction(params)
 
 ## Tests
 
-- The test directory **must** follow the structure below, using contributor as an example:
+- The test directory **must** follow the structure below, using `contributor` as an example:
 
 ```bash
 ├── test
@@ -189,7 +192,7 @@ yourFunction(params)
 - The file name responsible for testing the microservice **must** have the microservice name with `.test.js`.
 Example: `contributor.test.js`.
 
-- It **must** be only one file
+- It **must** be only one file.
 
 - The file **must** respect the order below:
 
@@ -231,4 +234,4 @@ Example:
 
 ### Recomendation
 
-- Internal projects **should** name `branches` and `pull requests` with same ID as the Jira tasks
+- Internal projects **should** name `branches` and `pull requests` with same ID as the Jira tasks.
