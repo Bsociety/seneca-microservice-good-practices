@@ -108,20 +108,20 @@ mergeValidate.validate({
 
 ```js
 function yourFunction (params) {
-  const logMessage = 'LOG::[SERVICE | UPSERT]'
+  const LOG_TAG = 'LOG::[MICROSERVICE | PLUGIN]'
   return new Promise((resolve, reject) => {
     const pattern = definePattern()
     const payload = definePayload(params)
     seneca.act(pattern, payload, (err, response) => {
       if (err) {
-        seneca.log.fatal(logMessage, err)
+        seneca.log.fatal(LOG_TAG, { err, response })
         return reject(err)
       }
       if (!response.status) {
-        seneca.log.error(logMessage, response)
+        seneca.log.error(LOG_TAG, { response })
         return reject(response)
       }
-      seneca.log.info(logMessage, response)
+      seneca.log.info(LOG_TAG, { response })
       return resolve(response)
     })
   })
