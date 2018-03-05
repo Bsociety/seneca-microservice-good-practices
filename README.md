@@ -123,14 +123,14 @@ function yourFunction (params) {
     const payload = definePayload(params)
     seneca.act(pattern, payload, (err, response) => {
       if (err) {
-        seneca.log.fatal(LOG_TAG, err)
+        seneca.log.fatal(LOG_TAG, { err, response })
         return reject(err)
       }
       if (!response.status) {
-        seneca.log.error(LOG_TAG, response)
+        seneca.log.error(LOG_TAG, { response })
         return reject(response)
       }
-      seneca.log.info(LOG_TAG, response)
+      seneca.log.info(LOG_TAG, { response })
       return resolve(response)
     })
   })
