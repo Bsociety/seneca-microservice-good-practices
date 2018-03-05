@@ -9,6 +9,7 @@
     1. [Joi validation](#joi-validation)
     1. [Params formatation/validation](#params-formatationvalidation)
     1. [Promises Chaining](#promises-chaining)
+    1. [Logging](#logging)
     1. [Message sending to another microservice](#message-sending-to-another-microservice)
 1. [Responses](#responses)
     1. [In case of Error](#in-case-of-error)
@@ -24,7 +25,7 @@
 - Add [`Seneca Merge-Validate package`](https://www.npmjs.com/package/seneca-merge-validate):
 
 ```bash
-npm i seneca-merge-validate
+$ npm i seneca-merge-validate@latest -S
 ```
 
 ## Files
@@ -53,12 +54,11 @@ function getValidateSchema () {
   return {
     type: Joi.string()
     .required()
-    .valid(DOCUMENT_TYPES)
-    .description('the user enabled status'),
+    .description('the type'),
 
     number: Joi.number()
     .required()
-    .description('the user deleted status')
+    .description('the number')
   }
 }
 ```
@@ -72,14 +72,16 @@ function getValidateSchema () {
 - Example:
 
 ```js
-const MergeValidate = require('seneca-merge-validate')
-const mergeValidate = MergeValidate(seneca)
+const SenecaMergeValidate = require('seneca-merge-validate')
+const senecaMergeValidate = SenecaMergeValidate(seneca)
+const Joi = senecaMergeValidate.Joi
 const PICK_FIELDS = [
   'id'
 ]
-  ...
 
-mergeValidate.validate({
+  /* ... */
+
+senecaMergeValidate.validate({
   args,
   pick: PICK_FIELDS,
   schema: getValidateSchema(),
@@ -95,10 +97,18 @@ mergeValidate.validate({
 **must** respect `then` and `catch` as the pattern below:
 
 ```js
-  mergeValidate.validate({ ... })
+  senecaMergeValidate.validate({ /* ... */ })
     .then(params => yourFunction(params))
     .then(result => done(null, result))
     .catch(err => done(null, { status: false, message: err && err.message || err }))
+```
+
+### Logging
+
+- The log tag **must** be declared in global scope as the pattern below:
+
+```js
+const LOG_TAG = 'LOG::[DOCUMENT | DELETE]'
 ```
 
 ### Message sending to another microservice
@@ -108,20 +118,19 @@ mergeValidate.validate({
 
 ```js
 function yourFunction (params) {
-  const logMessage = 'LOG::[SERVICE | UPSERT]'
   return new Promise((resolve, reject) => {
     const pattern = definePattern()
     const payload = definePayload(params)
     seneca.act(pattern, payload, (err, response) => {
       if (err) {
-        seneca.log.fatal(logMessage, err)
+        seneca.log.fatal(LOG_TAG, err)
         return reject(err)
       }
       if (!response.status) {
-        seneca.log.error(logMessage, response)
+        seneca.log.error(LOG_TAG, response)
         return reject(response)
       }
-      seneca.log.info(logMessage, response)
+      seneca.log.info(LOG_TAG, response)
       return resolve(response)
     })
   })
