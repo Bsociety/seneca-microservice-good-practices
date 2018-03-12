@@ -37,9 +37,9 @@ $ npm i seneca-merge-validate@latest -S
 1. `update.js`
 1. `delete.js`
 
-### Recomendations
+### Recomendation
 
-- In any file all lines **should** respect max **80** chars only.
+- In any file all lines **should** respect max **80** chars.
 
 ## Functions
 
@@ -260,4 +260,18 @@ Example:
 
 ### Recomendation
 
-- Internal projects **should** name `branches` and `pull requests` with same ID as the Jira tasks.
+- Internal projects **should** name `branches` and `pull requests` with same ID as the Jira tasks. Example:
+
+```
+Jira task: B2-420
+
+Branch: B2-420
+
+Pull Request: B2 420
+```
+
+- Each `pull request` and `branch` created **should** have the ID of a main task and **not** sub-tasks.
+
+- **Always** use Jira time-trackers on sub-tasks.
+
+- Each `pull request` **should** contain *bussiness rules* (the task itself), *unit/behavior tests* and *WebAPI endpoints*.
